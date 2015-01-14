@@ -22,11 +22,11 @@
 				parse: function(execResult)
 				{
 					return [
-					execResult[1],
-					execResult[2],
-					execResult[3],
-					execResult[4]
-				];
+						execResult[1],
+						execResult[2],
+						execResult[3],
+						execResult[4]
+					];
 				}
 		},
 			{
@@ -34,11 +34,11 @@
 				parse: function(execResult)
 				{
 					return [
-					execResult[1] * 2.55,
-					execResult[2] * 2.55,
-					execResult[3] * 2.55,
-					execResult[4]
-				];
+						execResult[1] * 2.55,
+						execResult[2] * 2.55,
+						execResult[3] * 2.55,
+						execResult[4]
+					];
 				}
 		},
 			{
@@ -47,10 +47,10 @@
 				parse: function(execResult)
 				{
 					return [
-					parseInt(execResult[1], 16),
-					parseInt(execResult[2], 16),
-					parseInt(execResult[3], 16)
-				];
+						parseInt(execResult[1], 16),
+						parseInt(execResult[2], 16),
+						parseInt(execResult[3], 16)
+					];
 				}
 		},
 			{
@@ -59,10 +59,10 @@
 				parse: function(execResult)
 				{
 					return [
-					parseInt(execResult[1] + execResult[1], 16),
-					parseInt(execResult[2] + execResult[2], 16),
-					parseInt(execResult[3] + execResult[3], 16)
-				];
+						parseInt(execResult[1] + execResult[1], 16),
+						parseInt(execResult[2] + execResult[2], 16),
+						parseInt(execResult[3] + execResult[3], 16)
+					];
 				}
 		},
 			{
@@ -71,11 +71,11 @@
 				parse: function(execResult)
 				{
 					return [
-					execResult[1],
-					execResult[2] / 100,
-					execResult[3] / 100,
-					execResult[4]
-				];
+						execResult[1],
+						execResult[2] / 100,
+						execResult[3] / 100,
+						execResult[4]
+					];
 				}
 		}],
 
