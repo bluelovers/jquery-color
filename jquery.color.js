@@ -507,7 +507,12 @@
 		toString: function()
 		{
 			return this._rgba[3] === 0 ? "transparent" : this.toRgbaString();
-		}
+		},
+
+		clone: function()
+		{
+			return color(this._rgba);
+		},
 	});
 	color.fn.parse.prototype = color.fn;
 
