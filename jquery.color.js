@@ -721,6 +721,39 @@
 			}
 			return p;
 		},
+
+		// https://gist.github.com/xpansive/1241234
+		hsv2rgb: function (
+			//parameters range from 0 - 1
+			a, // hue 0.0 - 1.0
+			b, // saturation 0.0 - 1.0
+			c, // value 0.0 - 1.0
+
+			d, // hue divider
+			e, // value splitter
+			f // array placeholder
+		)
+		{
+			d = a * 6 % 1; // deviation of the current hue (red<->yellow<->green<->cyan<->blue<->violet),
+			// the higher the value, the more the color deviates to the next hue
+
+			// create an array of the color strength regardless of hue
+			f = [
+				c, // full value on this color
+				-c * d * b + c, // deviation part 1
+				e = -c * b + c, // deviation part 2
+				e, // median deviation
+				c * d * b + e, // deviation part 3
+				c // full value
+			];
+
+			// select the colors out of the array in regard of hue
+			return [ // [r,g,b] - ranges from 0 to 1
+				f[d = a * 6 | 0], //red
+				f[(4 + d) % 6], //green
+				f[(2 + d) % 6] //blue
+			];
+		},
 	});
 
 	spaces.hsla.to = function(rgba)
