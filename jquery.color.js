@@ -560,11 +560,13 @@
 
 			if (y >= 1275)
 			{
-				return 'light';
+				//return 'light';
+				return 'white';
 			}
 			else
 			{
-				return 'dark';
+				//return 'dark';
+				return 'black';
 			}
 		},
 
