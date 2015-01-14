@@ -538,6 +538,37 @@
 
 			return color(rgba);
 		},
+
+		/**
+		 * @url https://gist.github.com/kozo002/6806421
+		 **/
+		chkBrightness: function(skipAlpha)
+		{
+			var rgba = this._rgba.slice();
+
+			if (rgba[3] === 0)
+			{
+				return null;
+			}
+
+			if (skipAlpha)
+			{
+				var _copy = this.clone().blend();
+
+				rgba = _copy._rgba.slice();
+			}
+
+			var y = 2.99 * rgba[0] + 5.87 * rgba[1] + 1.14 * rgba[2];
+
+			if (y >= 1275)
+			{
+				return 'light';
+			}
+			else
+			{
+				return 'dark';
+			}
+		},
 	});
 	color.fn.parse.prototype = color.fn;
 
