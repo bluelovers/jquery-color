@@ -174,8 +174,7 @@
 
 	function clamp(value, prop, allowEmpty)
 	{
-		var type = propTypes[prop.type] ||
-		{};
+		var type = propTypes[prop.type] || {};
 
 		if (value == null)
 		{
@@ -396,8 +395,7 @@
 				var index = prop.idx,
 					startValue = start[index],
 					endValue = end[index],
-					type = propTypes[prop.type] ||
-					{};
+					type = propTypes[prop.type] || {};
 
 				// if null, don't override start value
 				if (endValue === null)
