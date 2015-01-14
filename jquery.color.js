@@ -128,6 +128,30 @@
 					}
 				}
 			},
+
+			// not work on css
+			hsva:
+			{
+				props:
+				{
+					hue:
+					{
+						idx: 0,
+						type: "degrees"
+					},
+					saturation:
+					{
+						idx: 1,
+						type: "percent"
+					},
+					//value:
+					brightness:
+					{
+						idx: 2,
+						type: "percent"
+					}
+				}
+			},
 		},
 		propTypes = {
 			"byte":
@@ -671,37 +695,6 @@
 			return color(options || [255, 255, 255, 1]).rand();
 		},
 
-		// https://gist.github.com/xpansive/1337890
-		hsv2hsl: function(hue, sat, val)
-		{
-			return [
-				//[hue, saturation, lightness]
-				//Range should be between 0 - 1
-				hue, //Hue stays the same
-
-				//Saturation is very different between the two color spaces
-				//If (2-sat)*val < 1 set it to sat*val/((2-sat)*val)
-				//Otherwise sat*val/(2-(2-sat)*val)
-				//Conditional is not operating with hue, it is reassigned!
-				sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue),
-				hue / 2 //Lightness is (2-sat)*val/2
-				//See reassignment of hue above
-			],
-		},
-
-		hsl2hsv: function(hue, sat, light)
-		{
-			sat *= light < .5 ? light : 1 - light;
-
-			return [
-				//[hue, saturation, value]
-				//Range should be between 0 - 1
-				hue, //Hue stays the same
-				2 * sat / (light + sat), //Saturation
-				light + sat //Value
-			],
-		},
-
 		// hsla conversions adapted from:
 		// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
 		hue2rgb: function (p, q, h)
@@ -720,6 +713,37 @@
 				return p + (q - p) * ((2 / 3) - h) * 6;
 			}
 			return p;
+		},
+
+		// https://gist.github.com/xpansive/1337890
+		hsv2hsl: function(hue, sat, val)
+		{
+			return [
+				//[hue, saturation, lightness]
+				//Range should be between 0 - 1
+				hue, //Hue stays the same
+
+				//Saturation is very different between the two color spaces
+				//If (2-sat)*val < 1 set it to sat*val/((2-sat)*val)
+				//Otherwise sat*val/(2-(2-sat)*val)
+				//Conditional is not operating with hue, it is reassigned!
+				sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue),
+				hue / 2 //Lightness is (2-sat)*val/2
+				//See reassignment of hue above
+			];
+		},
+
+		hsl2hsv: function(hue, sat, light)
+		{
+			sat *= light < .5 ? light : 1 - light;
+
+			return [
+				//[hue, saturation, value]
+				//Range should be between 0 - 1
+				hue, //Hue stays the same
+				2 * sat / (light + sat), //Saturation
+				light + sat //Value
+			];
 		},
 
 		// https://gist.github.com/xpansive/1241234
@@ -859,6 +883,20 @@
 		];
 	};
 
+	spaces.hsva.to = function(rgba)
+	{
+		var a = rgba[3];
+
+		if (rgba[0] == null || rgba[1] == null || rgba[2] == null)
+		{
+			return [null, null, null, rgba[3]];
+		}
+
+		var hsva = color.rgb2hsv(rgba[0], rgba[1], rgba[2]);
+		hsva.push(a == null ? 1 : a);
+
+		return hsva;
+	};
 
 	each(spaces, function(spaceName, space)
 	{
