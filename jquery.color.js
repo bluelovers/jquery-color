@@ -617,7 +617,7 @@
 			rgb.push(a);
 
 			return color(rgb);
-		}
+		},
 	});
 	color.fn.parse.prototype = color.fn;
 
