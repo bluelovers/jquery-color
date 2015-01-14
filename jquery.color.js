@@ -578,6 +578,46 @@
 
 			return ret === undefined ? this : ret;
 		},
+
+		blendBrightness: function(options, skipAlpha)
+		{
+			var rgb = this._rgba.slice(),
+				a = rgb.pop()
+				;
+
+			console.log([rgb, a]);
+
+			if (skipAlpha)
+			{
+				var _copy = this.clone().blend();
+
+				rgb = _copy._rgba.slice();
+				a = rgb.pop();
+			}
+
+			var max = (rgb.slice().sort(function(l,r){return r-l}))[0];
+			var multiplier = max;
+
+			multiplier = (multiplier / 255) + 1;
+
+			// if it would still be too dark, make it lighten more
+			if (multiplier < 1.5) multiplier = options || 1.9;
+
+			// if it gets to white, move away a bit
+			if ((max * multiplier) > 255)
+			{
+				multiplier = (multiplier / 230) + 1.005;
+			}
+
+			$.each(rgb, function(i, v)
+			{
+				rgb[i] = multiplier * v;
+			});
+
+			rgb.push(a);
+
+			return color(rgb);
+		}
 	});
 	color.fn.parse.prototype = color.fn;
 
