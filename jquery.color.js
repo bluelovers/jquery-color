@@ -630,7 +630,7 @@
 
 			for (i = 0; i<3; i++)
 			{
-				rgba[i] = Math.round(fn() * (1 + rgba[i]));
+				rgba[i] = Math.round(fn(i, rgba[i]) * (1 + rgba[i]));
 			}
 
 			return color(rgba);
@@ -653,6 +653,12 @@
 			});
 
 			return color(rgba);
+		},
+
+		contrastColor: function()
+		{
+			var r = this._rgba[0], g = this._rgba[1], b = this._rgba[2];
+			return color((((r*299)+(g*587)+(b*144))/1000) >= 131.5 ? 'black' : 'white');
 		},
 	});
 	color.fn.parse.prototype = color.fn;
