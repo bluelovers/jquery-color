@@ -127,7 +127,7 @@
 						type: "percent"
 					}
 				}
-			}
+			},
 		},
 		propTypes = {
 			"byte":
@@ -143,7 +143,7 @@
 			{
 				mod: 360,
 				floor: true
-			}
+			},
 		},
 		support = color.support = {},
 
