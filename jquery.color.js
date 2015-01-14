@@ -778,11 +778,11 @@
 			h = Math.floor(h * 60);
 			if (h < 0) h += 360;
 
-			return {
-				h: h,
-				s: s,
-				v: v
-			};
+			return [
+				h,
+				s,
+				v
+			];
 		},
 	});
 
