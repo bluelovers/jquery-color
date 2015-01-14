@@ -527,11 +527,9 @@
 				rgba = _copy._rgba.slice();
 			}
 
-			var len = Math.min(3, rgba.length);
-
 			var i;
 
-			for (i = 0; i<len; i++)
+			for (i = 0; i<3; i++)
 			{
 				rgba[i] = Math.abs(255 - rgba[i]);
 			}
@@ -618,24 +616,51 @@
 
 			return color(rgb);
 		},
+
+		rand: function(fn)
+		{
+			var rgba = this._rgba.slice();
+
+			if (!$.isFunction(fn))
+			{
+				fn = Math.random;
+			}
+
+			var i;
+
+			for (i = 0; i<3; i++)
+			{
+				rgba[i] = Math.round(fn() * (1 + rgba[i]));
+			}
+
+			return color(rgba);
+		},
+
+		scale: function(value)
+		{
+			var rgba = this._rgba.slice();
+
+			var i;
+
+			if (!$.isArray(value))
+			{
+				value = [value, value, value, 1];
+			}
+
+			rgba.map(function(v, i)
+			{
+				rgba[i] = Math.round(value[i] * v);
+			});
+
+			return color(rgba);
+		},
 	});
 	color.fn.parse.prototype = color.fn;
 
 	$.extend(color, {
 		rand: function(options)
 		{
-			var rgba = options !== undefined ? color(options)._rgba.slice() : [null, null, null, 1];
-
-			var i;
-
-			for (i = 0; i<3; i++)
-			{
-				rgba[i] = Math.round(Math.random() * (rgba[i] === null ? 255 : rgba[i]));
-
-				rgba[i] = Math.max(0, Math.min(255, rgba[i]));
-			}
-
-			return color(rgba);
+			return color(options || [255, 255, 255, 1]).rand();
 		},
 	});
 
