@@ -754,6 +754,36 @@
 				f[(2 + d) % 6] //blue
 			];
 		},
+
+		// http://stackoverflow.com/questions/5833624/increase-css-brightness-color-on-click-with-jquery-javascript
+		// http://jsfiddle.net/K8cMX/7/
+		rgb2hsv: function (r, g, b)
+		{
+			var min = Math.min(r, g, b),
+				max = Math.max(r, g, b),
+				delta = max - min,
+				h, s, v = max;
+
+			v = Math.floor(max / 255 * 100);
+
+			if (max == 0) return [0, 0, 0];
+
+			s = Math.floor(delta / max * 100);
+			var deltadiv = delta == 0 ? 1 : delta;
+
+			if (r == max) h = (g - b) / deltadiv;
+			else if (g == max) h = 2 + (b - r) / deltadiv;
+			else h = 4 + (r - g) / deltadiv;
+
+			h = Math.floor(h * 60);
+			if (h < 0) h += 360;
+
+			return {
+				h: h,
+				s: s,
+				v: v
+			};
+		},
 	});
 
 	spaces.hsla.to = function(rgba)
