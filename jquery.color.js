@@ -701,28 +701,27 @@
 				light + sat //Value
 			],
 		},
+
+		// hsla conversions adapted from:
+		// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
+		hue2rgb: function (p, q, h)
+		{
+			h = (h + 1) % 1;
+			if (h * 6 < 1)
+			{
+				return p + (q - p) * h * 6;
+			}
+			if (h * 2 < 1)
+			{
+				return q;
+			}
+			if (h * 3 < 2)
+			{
+				return p + (q - p) * ((2 / 3) - h) * 6;
+			}
+			return p;
+		},
 	});
-
-	// hsla conversions adapted from:
-	// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
-
-	function hue2rgb(p, q, h)
-	{
-		h = (h + 1) % 1;
-		if (h * 6 < 1)
-		{
-			return p + (q - p) * h * 6;
-		}
-		if (h * 2 < 1)
-		{
-			return q;
-		}
-		if (h * 3 < 2)
-		{
-			return p + (q - p) * ((2 / 3) - h) * 6;
-		}
-		return p;
-	}
 
 	spaces.hsla.to = function(rgba)
 	{
@@ -789,9 +788,9 @@
 			p = 2 * l - q;
 
 		return [
-			Math.round(hue2rgb(p, q, h + (1 / 3)) * 255),
-			Math.round(hue2rgb(p, q, h) * 255),
-			Math.round(hue2rgb(p, q, h - (1 / 3)) * 255),
+			Math.round(color.hue2rgb(p, q, h + (1 / 3)) * 255),
+			Math.round(color.hue2rgb(p, q, h) * 255),
+			Math.round(color.hue2rgb(p, q, h - (1 / 3)) * 255),
 			a
 		];
 	};
