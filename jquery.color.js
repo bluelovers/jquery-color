@@ -130,6 +130,11 @@
 			},
 
 			// not work on css
+			/*
+				[a = $jQuery.Color('rgb(128, 25, 0)'), a.hsla(), a.hsva(), a + '', a.toHslaString(), a.toHsvaString(),
+				a.brightness(), a.lightness(), a.brightness(0.25),
+				a.brightness(0.25).toHsvaString(), a.brightness(0.25) + '']
+			*/
 			hsva:
 			{
 				props:
@@ -686,6 +691,32 @@
 			var r = this._rgba[0], g = this._rgba[1], b = this._rgba[2];
 			return color((((r*299)+(g*587)+(b*144))/1000) >= 131.5 ? 'black' : 'white');
 		},
+
+		toHsvaString: function()
+		{
+			var prefix = "hsva(",
+				hsva = $.map(this.hsva(), function(v, i)
+				{
+					if (v == null)
+					{
+						v = i > 2 ? 1 : 0;
+					}
+
+					// catch 1 and 2
+					if (i && i < 3)
+					{
+						v = Math.round(v * 100) + "%";
+					}
+					return v;
+				});
+
+			if (hsva[3] === 1)
+			{
+				hsva.pop();
+				prefix = "hsv(";
+			}
+			return prefix + hsva.join() + ")";
+		},
 	});
 	color.fn.parse.prototype = color.fn;
 
@@ -772,11 +803,17 @@
 			];
 
 			// select the colors out of the array in regard of hue
-			return [
+			var ret = [
 				// [r,g,b] - ranges from 0 to 1
 				f[d = a * 6 | 0], //red
 				f[(4 + d) % 6], //green
 				f[(2 + d) % 6] //blue
+			];
+
+			return [
+				Math.round(ret[0] * 255),
+				Math.round(ret[1] * 255),
+				Math.round(ret[2] * 255),
 			];
 		},
 
@@ -805,8 +842,8 @@
 
 			return [
 				h,
-				s,
-				v
+				s / 100,
+				v / 100
 			];
 		},
 	});
@@ -885,18 +922,47 @@
 
 	spaces.hsva.to = function(rgba)
 	{
-		var a = rgba[3];
-
-		if (rgba[0] == null || rgba[1] == null || rgba[2] == null)
+		var arr;
+		if (arr = _valid_rgba(rgba))
 		{
-			return [null, null, null, rgba[3]];
+			return arr;
 		}
 
+		var a = rgba[3];
+
 		var hsva = color.rgb2hsv(rgba[0], rgba[1], rgba[2]);
-		hsva.push(a == null ? 1 : a);
+		hsva[3] = (a == null ? 1 : a);
 
 		return hsva;
 	};
+
+	spaces.hsva.from = function(hsva)
+	{
+		var arr;
+		if (arr = _valid_rgba(hsva))
+		{
+			return arr;
+		}
+
+		var h = hsva[0] / 360,
+			s = hsva[1],
+			v = hsva[2],
+			a = hsva[3]
+			;
+
+		var rgba = color.hsv2rgb(h, s, v);
+		rgba[3] = (a == null ? 1 : a);
+
+		return rgba;
+	};
+
+	function _valid_rgba(arr)
+	{
+		if (arr[0] == null || arr[1] == null || arr[2] == null)
+		{
+			return [null, null, null, arr[3]];
+		}
+	}
 
 	each(spaces, function(spaceName, space)
 	{
@@ -957,7 +1023,7 @@
 			color.fn[key] = function(value)
 			{
 				var vtype = $.type(value),
-					fn = (key === "alpha" ? (this._hsla ? "hsla" : "rgba") : spaceName),
+					fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
 					local = this[fn](),
 					cur = local[prop.idx],
 					match;
