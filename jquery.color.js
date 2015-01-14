@@ -546,7 +546,7 @@
 		{
 			var rgba = this._rgba.slice();
 
-			if (rgba[3] === 0)
+			if (!skipAlpha && rgba[3] === 0)
 			{
 				return null;
 			}
