@@ -22,62 +22,62 @@
 				parse: function(execResult)
 				{
 					return [
-                    execResult[1],
-                    execResult[2],
-                    execResult[3],
-                    execResult[4]
-                ];
+					execResult[1],
+					execResult[2],
+					execResult[3],
+					execResult[4]
+				];
 				}
-        },
+		},
 			{
 				re: /rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
 				parse: function(execResult)
 				{
 					return [
-                    execResult[1] * 2.55,
-                    execResult[2] * 2.55,
-                    execResult[3] * 2.55,
-                    execResult[4]
-                ];
+					execResult[1] * 2.55,
+					execResult[2] * 2.55,
+					execResult[3] * 2.55,
+					execResult[4]
+				];
 				}
-        },
+		},
 			{
 				// this regex ignores A-F because it's compared against an already lowercased string
 				re: /#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,
 				parse: function(execResult)
 				{
 					return [
-                    parseInt(execResult[1], 16),
-                    parseInt(execResult[2], 16),
-                    parseInt(execResult[3], 16)
-                ];
+					parseInt(execResult[1], 16),
+					parseInt(execResult[2], 16),
+					parseInt(execResult[3], 16)
+				];
 				}
-        },
+		},
 			{
 				// this regex ignores A-F because it's compared against an already lowercased string
 				re: /#([a-f0-9])([a-f0-9])([a-f0-9])/,
 				parse: function(execResult)
 				{
 					return [
-                    parseInt(execResult[1] + execResult[1], 16),
-                    parseInt(execResult[2] + execResult[2], 16),
-                    parseInt(execResult[3] + execResult[3], 16)
-                ];
+					parseInt(execResult[1] + execResult[1], 16),
+					parseInt(execResult[2] + execResult[2], 16),
+					parseInt(execResult[3] + execResult[3], 16)
+				];
 				}
-        },
+		},
 			{
 				re: /hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
 				space: "hsla",
 				parse: function(execResult)
 				{
 					return [
-                    execResult[1],
-                    execResult[2] / 100,
-                    execResult[3] / 100,
-                    execResult[4]
-                ];
+					execResult[1],
+					execResult[2] / 100,
+					execResult[3] / 100,
+					execResult[4]
+				];
 				}
-        }],
+		}],
 
 		// jQuery.Color( )
 		color = jQuery.Color = function(color, green, blue, alpha)
@@ -599,11 +599,11 @@
 			p = 2 * l - q;
 
 		return [
-            Math.round(hue2rgb(p, q, h + (1 / 3)) * 255),
-            Math.round(hue2rgb(p, q, h) * 255),
-            Math.round(hue2rgb(p, q, h - (1 / 3)) * 255),
-            a
-        ];
+			Math.round(hue2rgb(p, q, h + (1 / 3)) * 255),
+			Math.round(hue2rgb(p, q, h) * 255),
+			Math.round(hue2rgb(p, q, h - (1 / 3)) * 255),
+			a
+		];
 	};
 
 
