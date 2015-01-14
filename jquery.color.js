@@ -516,20 +516,16 @@
 			return color(rgba);
 		},
 
-		invert: function()
+		invert: function(skipAlpha)
 		{
-			//invert: function(includeAlpha)
-
 			var rgba = this._rgba.slice();
 
-			/*
-			if (includeAlpha)
+			if (skipAlpha)
 			{
-				var _copy = color(this.clone().toHexString(includeAlpha));
+				var _copy = this.clone().blend();
 
 				rgba = _copy._rgba.slice();
 			}
-			*/
 
 			var len = Math.min(3, rgba.length);
 
