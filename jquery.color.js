@@ -8,7 +8,7 @@
  *
  * Date: @DATE
  */
-(function(jQuery, undefined)
+(function($, undefined)
 {
 
 	var stepHooks = "backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",
@@ -79,10 +79,10 @@
 				}
 		}],
 
-		// jQuery.Color( )
-		color = jQuery.Color = function(color, green, blue, alpha)
+		// $.Color( )
+		color = $.Color = function(color, green, blue, alpha)
 		{
-			return new jQuery.Color.fn.parse(color, green, blue, alpha);
+			return new $.Color.fn.parse(color, green, blue, alpha);
 		},
 		spaces = {
 			rgba:
@@ -148,13 +148,13 @@
 		support = color.support = {},
 
 		// element for support tests
-		supportElem = jQuery("<p>")[0],
+		supportElem = $("<p>")[0],
 
-		// colors = jQuery.Color.names
+		// colors = $.Color.names
 		colors,
 
 		// local aliases of functions called often
-		each = jQuery.each;
+		each = $.each;
 
 	// determine rgba support immediately
 	supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
@@ -238,7 +238,7 @@
 			// chrome, (and maybe others) return "transparent" as rgba(0,0,0,0)
 			if (rgba.join() === "0,0,0,0")
 			{
-				jQuery.extend(rgba, colors.transparent);
+				$.extend(rgba, colors.transparent);
 			}
 			return inst;
 		}
@@ -247,7 +247,7 @@
 		return colors[string];
 	}
 
-	color.fn = jQuery.extend(color.prototype,
+	color.fn = $.extend(color.prototype,
 	{
 		parse: function(red, green, blue, alpha)
 		{
@@ -258,13 +258,13 @@
 			}
 			if (red.jquery || red.nodeType)
 			{
-				red = jQuery(red)
+				red = $(red)
 					.css(green);
 				green = undefined;
 			}
 
 			var inst = this,
-				type = jQuery.type(red),
+				type = $.type(red),
 				rgba = this._rgba = [];
 
 			// more than 1 argument specified - assume ( red, green, blue, alpha )
@@ -327,7 +327,7 @@
 						});
 
 						// everything defined but alpha?
-						if (inst[cache] && jQuery.inArray(null, inst[cache].slice(0, 3)) < 0)
+						if (inst[cache] && $.inArray(null, inst[cache].slice(0, 3)) < 0)
 						{
 							// use the default of 1
 							inst[cache][3] = 1;
@@ -438,7 +438,7 @@
 				blend = color(opaque)
 				._rgba;
 
-			return color(jQuery.map(rgb, function(v, i)
+			return color($.map(rgb, function(v, i)
 			{
 				return (1 - a) * blend[i] + a * v;
 			}));
@@ -446,7 +446,7 @@
 		toRgbaString: function()
 		{
 			var prefix = "rgba(",
-				rgba = jQuery.map(this._rgba, function(v, i)
+				rgba = $.map(this._rgba, function(v, i)
 				{
 					return v == null ? (i > 2 ? 1 : 0) : v;
 				});
@@ -462,7 +462,7 @@
 		toHslaString: function()
 		{
 			var prefix = "hsla(",
-				hsla = jQuery.map(this.hsla(), function(v, i)
+				hsla = $.map(this.hsla(), function(v, i)
 				{
 					if (v == null)
 					{
@@ -494,7 +494,7 @@
 				rgba.push(~~(alpha * 255));
 			}
 
-			return "#" + jQuery.map(rgba, function(v)
+			return "#" + $.map(rgba, function(v)
 				{
 
 					// default to 0 when nulls exist
@@ -697,7 +697,7 @@
 			}
 
 			var ret,
-				type = jQuery.type(value),
+				type = $.type(value),
 				arr = (type === "array" || type === "object") ? value : arguments,
 				local = this[cache].slice();
 
@@ -733,7 +733,7 @@
 			}
 			color.fn[key] = function(value)
 			{
-				var vtype = jQuery.type(value),
+				var vtype = $.type(value),
 					fn = (key === "alpha" ? (this._hsla ? "hsla" : "rgba") : spaceName),
 					local = this[fn](),
 					cur = local[prop.idx],
@@ -747,7 +747,7 @@
 				if (vtype === "function")
 				{
 					value = value.call(this, cur);
-					vtype = jQuery.type(value);
+					vtype = $.type(value);
 				}
 				if (value == null && prop.empty)
 				{
@@ -774,13 +774,13 @@
 		var hooks = hook.split(" ");
 		each(hooks, function(i, hook)
 		{
-			jQuery.cssHooks[hook] = {
+			$.cssHooks[hook] = {
 				set: function(elem, value)
 				{
 					var parsed, curElem,
 						backgroundColor = "";
 
-					if (value !== "transparent" && (jQuery.type(value) !== "string" || (parsed = stringParse(value))))
+					if (value !== "transparent" && ($.type(value) !== "string" || (parsed = stringParse(value))))
 					{
 						value = color(parsed || value);
 						if (!support.rgba && value._rgba[3] !== 1)
@@ -793,7 +793,7 @@
 							{
 								try
 								{
-									backgroundColor = jQuery.css(curElem, "backgroundColor");
+									backgroundColor = $.css(curElem, "backgroundColor");
 									curElem = curElem.parentNode;
 								}
 								catch (e)
@@ -817,7 +817,7 @@
 					}
 				}
 			};
-			jQuery.fx.step[hook] = function(fx)
+			$.fx.step[hook] = function(fx)
 			{
 				if (!fx.colorInit)
 				{
@@ -825,7 +825,7 @@
 					fx.end = color(fx.end);
 					fx.colorInit = true;
 				}
-				jQuery.cssHooks[hook].set(fx.elem, fx.start.transition(fx.end, fx.pos));
+				$.cssHooks[hook].set(fx.elem, fx.start.transition(fx.end, fx.pos));
 			};
 		});
 
@@ -833,7 +833,7 @@
 
 	color.hook(stepHooks);
 
-	jQuery.cssHooks.borderColor = {
+	$.cssHooks.borderColor = {
 		expand: function(value)
 		{
 			var expanded = {};
@@ -849,7 +849,7 @@
 	// Basic color names only.
 	// Usage of any of the other color names requires adding yourself or including
 	// jquery.color.svg-names.js.
-	colors = jQuery.Color.names = {
+	colors = $.Color.names = {
 		// 4.1. Basic color keywords
 		aqua: "#00ffff",
 		black: "#000000",
