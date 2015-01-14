@@ -748,7 +748,8 @@
 			];
 
 			// select the colors out of the array in regard of hue
-			return [ // [r,g,b] - ranges from 0 to 1
+			return [
+				// [r,g,b] - ranges from 0 to 1
 				f[d = a * 6 | 0], //red
 				f[(4 + d) % 6], //green
 				f[(2 + d) % 6] //blue
