@@ -511,7 +511,36 @@
 
 		clone: function()
 		{
-			return color(this._rgba);
+			var rgba = this._rgba.slice();
+
+			return color(rgba);
+		},
+
+		invert: function()
+		{
+			//invert: function(includeAlpha)
+
+			var rgba = this._rgba.slice();
+
+			/*
+			if (includeAlpha)
+			{
+				var _copy = color(this.clone().toHexString(includeAlpha));
+
+				rgba = _copy._rgba.slice();
+			}
+			*/
+
+			var len = Math.min(3, rgba.length);
+
+			var i;
+
+			for (i = 0; i<len; i++)
+			{
+				rgba[i] = Math.abs(255 - rgba[i]);
+			}
+
+			return color(rgba);
 		},
 	});
 	color.fn.parse.prototype = color.fn;
