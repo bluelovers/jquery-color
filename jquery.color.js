@@ -581,6 +581,24 @@
 	});
 	color.fn.parse.prototype = color.fn;
 
+	$.extend(color, {
+		rand: function(options)
+		{
+			var rgba = options !== undefined ? color(options)._rgba.slice() : [null, null, null, 1];
+
+			var i;
+
+			for (i = 0; i<3; i++)
+			{
+				rgba[i] = Math.round(Math.random() * (rgba[i] === null ? 255 : rgba[i]));
+
+				rgba[i] = Math.max(0, Math.min(255, rgba[i]));
+			}
+
+			return color(rgba);
+		},
+	});
+
 	// hsla conversions adapted from:
 	// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
 
