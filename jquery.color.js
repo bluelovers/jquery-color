@@ -77,7 +77,23 @@
 						execResult[4]
 					];
 				}
-		}],
+		},
+			{
+				// hsv(30,100%,40%)
+
+				re: /hsva?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
+				space: "hsva",
+				parse: function(execResult)
+				{
+					return [
+						execResult[1],
+						execResult[2] / 100,
+						execResult[3] / 100,
+						execResult[4]
+					];
+				}
+		},
+		],
 
 		// $.Color( )
 		color = $.Color = function(color, green, blue, alpha)
@@ -717,8 +733,25 @@
 			}
 			return prefix + hsva.join() + ")";
 		},
+
+		greyscale: function()
+		{
+			return this.saturation(0);
+		},
 	});
 	color.fn.parse.prototype = color.fn;
+
+	/*
+	$.extend(color, {
+		_defaults: {
+			format: 'rgba',
+		},
+
+		options: {
+			format: 'Rgba',
+		},
+	});
+	*/
 
 	$.extend(color, {
 		rand: function(options)
