@@ -1129,6 +1129,7 @@
 
 						value = value.toRgbaString();
 					}
+					/*
 					try
 					{
 						elem.style[hook] = value;
@@ -1137,7 +1138,11 @@
 					{
 						// wrapped to prevent IE from throwing errors on "invalid" values like 'auto' or 'inherit'
 					}
-				}
+					*/
+
+					// let jquery handle hook value
+					return value;
+				},
 			};
 			$.fx.step[hook] = function(fx)
 			{
