@@ -1198,7 +1198,7 @@
 		// 4.2.3. "transparent" color keyword
 		transparent: [null, null, null, 0],
 
-		_default: "#ffffff"
+		_default: "#ffffff",
 	};
 
 }(jQuery));
