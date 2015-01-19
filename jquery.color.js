@@ -10,6 +10,7 @@
  */
 (function($, undefined)
 {
+	//var _global_ = this;
 
 	var stepHooks = "backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",
 
@@ -197,6 +198,9 @@
 
 		// colors = $.Color.names
 		colors,
+
+		// $.Color._cache_ = _cache_
+		_cache_ = {},
 
 		// local aliases of functions called often
 		each = $.each;
@@ -738,8 +742,48 @@
 		{
 			return this.saturation(0);
 		},
+
+		name: function()
+		{
+			var len = object_size(color.names);
+			if (_cache_['colors.names.length'] != len)
+			{
+				_cache_['colors.names.length'] = len;
+
+				_cache_['colors.names'] = {};
+
+				$.each(color.names, function(i, v){
+					_cache_['colors.names'][v] = i;
+				});
+			}
+
+			return _cache_['colors.names'][this.toHexString()];
+		},
 	});
 	color.fn.parse.prototype = color.fn;
+
+	try
+	{
+		Object.defineProperty(color, '_cache_', {
+
+			value: _cache_,
+
+			writable: false,
+			enumerable: false,
+			configurable: false,
+
+			/*
+			get: function ()
+			{
+				return _cache_;
+			},
+			*/
+		});
+	}
+	catch(e)
+	{
+		console.log([e]);
+	}
 
 	/*
 	$.extend(color, {
@@ -1173,6 +1217,19 @@
 		}
 	};
 
+	function object_size(obj)
+	{
+		var size = 0, key;
+		for (key in obj)
+		{
+			if (obj.hasOwnProperty(key))
+			{
+				size++;
+			}
+		}
+		return size;
+	}
+
 	// Basic color names only.
 	// Usage of any of the other color names requires adding yourself or including
 	// jquery.color.svg-names.js.
@@ -1200,5 +1257,7 @@
 
 		_default: "#ffffff",
 	};
+
+	//console.log([_global_]);
 
 }(jQuery));
