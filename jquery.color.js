@@ -351,16 +351,36 @@
 				}
 				else
 				{
+					var _temp = {};
+
 					each(spaces, function(spaceName, space)
 					{
 						var cache = space.cache;
+
+						_temp[cache] = 0;
+
 						each(space.props, function(key, prop)
 						{
+							(red[key] !== null && red[key] !== undefined) && _temp[cache]++;
+						});
 
+						_temp['_'] = Math.max(_temp['_'] || 0, _temp[cache]);
+					});
+
+					each(spaces, function(spaceName, space)
+					{
+						var cache = space.cache;
+
+						if (_temp['_'] > _temp[cache] || !_temp[cache])
+						{
+							return;
+						}
+
+						each(space.props, function(key, prop)
+						{
 							// if the cache doesn't exist, and we know how to convert
 							if (!inst[cache] && space.to)
 							{
-
 								// if the value was null, we don't need to copy it
 								// if the key was alpha, we don't need to copy it either
 								if (key === "alpha" || red[key] == null)
@@ -855,42 +875,74 @@
 		},
 
 		// https://gist.github.com/xpansive/1241234
-		hsv2rgb: function (
-			//parameters range from 0 - 1
-			a, // hue 0.0 - 1.0
-			b, // saturation 0.0 - 1.0
-			c, // value 0.0 - 1.0
-
-			d, // hue divider
-			e, // value splitter
-			f // array placeholder
-		)
+		hsv2rgb: function(h, s, v)
 		{
-			d = a * 6 % 1; // deviation of the current hue (red<->yellow<->green<->cyan<->blue<->violet),
-			// the higher the value, the more the color deviates to the next hue
+			h = h / 360;
+			/*
+			s = s;
+			v = v;
+			*/
 
-			// create an array of the color strength regardless of hue
-			f = [
-				c, // full value on this color
-				-c * d * b + c, // deviation part 1
-				e = -c * b + c, // deviation part 2
-				e, // median deviation
-				c * d * b + e, // deviation part 3
-				c // full value
-			];
+			var red, green, blue;
 
-			// select the colors out of the array in regard of hue
-			var ret = [
-				// [r,g,b] - ranges from 0 to 1
-				f[d = a * 6 | 0], //red
-				f[(4 + d) % 6], //green
-				f[(2 + d) % 6] //blue
-			];
+			if (s == 0)
+			{
+				var val = Math.round(v * 255);
+				return [
+					val,
+					val,
+					val
+				];
+			}
+			var hPos = h * 6;
+			var hPosBase = Math.floor(hPos);
+			var base1 = v * (1 - s);
+			var base2 = v * (1 - s * (hPos - hPosBase));
+			var base3 = v * (1 - s * (1 - (hPos - hPosBase)));
+			if (hPosBase == 0)
+			{
+				red = v;
+				green = base3;
+				blue = base1
+			}
+			else if (hPosBase == 1)
+			{
+				red = base2;
+				green = v;
+				blue = base1
+			}
+			else if (hPosBase == 2)
+			{
+				red = base1;
+				green = v;
+				blue = base3
+			}
+			else if (hPosBase == 3)
+			{
+				red = base1;
+				green = base2;
+				blue = v
+			}
+			else if (hPosBase == 4)
+			{
+				red = base3;
+				green = base1;
+				blue = v
+			}
+			else
+			{
+				red = v;
+				green = base1;
+				blue = base2
+			};
 
+			red = Math.round(red * 255);
+			green = Math.round(green * 255);
+			blue = Math.round(blue * 255);
 			return [
-				Math.round(ret[0] * 255),
-				Math.round(ret[1] * 255),
-				Math.round(ret[2] * 255),
+				red,
+				green,
+				blue
 			];
 		},
 
