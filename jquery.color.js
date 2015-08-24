@@ -209,6 +209,8 @@
 	supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
 	support.rgba = supportElem.style.backgroundColor.indexOf("rgba") > -1;
 
+	color.spaces = spaces;
+
 	// define cache name and alpha properties
 	// for rgba and hsla spaces
 	each(spaces, function(spaceName, space)
@@ -371,7 +373,7 @@
 					{
 						var cache = space.cache;
 
-						if (_temp['_'] > _temp[cache] || !_temp[cache])
+						if (spaceName != 'rgba' && (_temp['_'] > _temp[cache] || !_temp[cache]))
 						{
 							return;
 						}
@@ -1073,7 +1075,7 @@
 			return arr;
 		}
 
-		var h = hsva[0] / 360,
+		var h = hsva[0]/* / 360*/,
 			s = hsva[1],
 			v = hsva[2],
 			a = hsva[3]
@@ -1225,7 +1227,7 @@
 
 						value = value.toRgbaString();
 					}
-					/*
+
 					try
 					{
 						elem.style[hook] = value;
@@ -1234,7 +1236,6 @@
 					{
 						// wrapped to prevent IE from throwing errors on "invalid" values like 'auto' or 'inherit'
 					}
-					*/
 
 					// let jquery handle hook value
 					return value;
