@@ -71,6 +71,8 @@ test( "jQuery.Color.hsv2rgb(100,1,1)", function() {
 	deepEqual( jQuery.Color.hsv2rgb.apply(jQuery.Color, _hsv), _rgb, "hsv2rgb has correct values");
 	deepEqual( jQuery.Color.rgb2hsv.apply(jQuery.Color, _rgb), _hsv, "rgb2hsv has correct values");
 
+	deepEqual( jQuery.Color.hsv2rgb.apply(this, jQuery.Color().hsva(100, 1, 1, 1)._hsva), _rgb, "hsv2rgb has correct values");
+
 	deepEqual( jQuery.Color().hsva(100,1,1, 1)._hsva, _hsva, "has correct values");
 	deepEqual( jQuery.Color().rgba(85, 255, 0, 1).hsva(), _hsva, "has correct values");
 
