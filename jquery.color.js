@@ -104,6 +104,8 @@
 		spaces = {
 			rgba:
 			{
+				sortorder: 0,
+
 				props:
 				{
 					red:
@@ -126,6 +128,8 @@
 
 			hsla:
 			{
+				sortorder: 1,
+
 				props:
 				{
 					hue:
@@ -154,6 +158,8 @@
 			*/
 			hsva:
 			{
+				sortorder: 2,
+
 				props:
 				{
 					hue:
@@ -213,6 +219,7 @@
 	// for rgba and hsla spaces
 	each(spaces, function(spaceName, space)
 	{
+		space.name = spaceName;
 		space.cache = "_" + spaceName;
 		space.props.alpha = {
 			idx: 3,
@@ -344,7 +351,7 @@
 			{
 				if (red instanceof color)
 				{
-					each(spaces, function(spaceName, space)
+					spaces_order._each(function(spaceName, space)
 					{
 						if (red[space.cache])
 						{
@@ -356,7 +363,7 @@
 				{
 					var _temp = {};
 
-					each(spaces, function(spaceName, space)
+					spaces_order._each(function(spaceName, space)
 					{
 						var cache = space.cache;
 
@@ -370,13 +377,17 @@
 						_temp['_'] = Math.max(_temp['_'] || 0, _temp[cache]);
 					});
 
-					each(spaces, function(spaceName, space)
+					spaces_order._each(function(spaceName, space)
 					{
 						var cache = space.cache;
 
 						if (spaceName != 'rgba' && (_temp['_'] > _temp[cache] || !_temp[cache]))
 						{
 							return;
+						}
+						else if (spaceName != 'rgba')
+						{
+							_temp['_']++;
 						}
 
 						each(space.props, function(key, prop)
@@ -419,7 +430,7 @@
 				same = true,
 				inst = this;
 
-			each(spaces, function(_, space)
+			spaces_order._each(function(_, space)
 			{
 				var localCache,
 					isCache = is[space.cache];
@@ -443,7 +454,7 @@
 		{
 			var used = [],
 				inst = this;
-			each(spaces, function(spaceName, space)
+			spaces_order._each(function(spaceName, space)
 			{
 				if (inst[space.cache])
 				{
@@ -1101,7 +1112,37 @@
 		}
 	}
 
+	var spaces_order = [];
+
+	spaces_order.__proto__._each = function (callback)
+	{
+		return this.forEach(function (space, sortorder, array)
+		{
+			return callback(space.name, space);
+		});
+	};
+
 	each(spaces, function(spaceName, space)
+	{
+		space.name = spaceName;
+
+		spaces_order.push(spaces[spaceName]);
+	});
+
+	spaces_order.sort(function (a, b) {
+
+		a.sortorder = (a.sortorder === null || a.sortorder === undefined) ? 99 : a.sortorder;
+		b.sortorder = (b.sortorder === null || b.sortorder === undefined) ? 99 : b.sortorder;
+
+		if (a.sortorder == b.sortorder)
+		{
+			return a.name > b.name;
+		}
+
+		return a.sortorder > b.sortorder;
+	});
+
+	spaces_order._each(function(spaceName, space)
 	{
 		var props = space.props;
 
@@ -1113,17 +1154,20 @@
 		});
 	});
 
-	each(spaces, function(spaceName, space)
+//	each(spaces, function(spaceName, space)
+	spaces_order._each(function(spaceName, space)
 	{
 		var props = space.props,
 			cache = space.cache,
 			to = space.to,
 			from = space.from;
 
+//		console.log(spaceName);
+
 		// makes rgba() and hsla()
 		color.fn[spaceName] = function(value)
 		{
-			this._cache_['spaceName'] = spaceName;
+//			this._cache_['spaceName'] = spaceName;
 
 			// generate a cache for this space if it doesn't exist
 			if (to && !this[cache])
