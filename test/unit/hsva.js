@@ -110,3 +110,41 @@ test( "jQuery.Color.hsv2rgb(100,1,1)", function() {
 	});
 
 });
+
+test("HSLA Transitions", function() {
+	var red = jQuery.Color("red"),
+		desaturate = red.transition( jQuery.Color({ saturation: 0 }), 0.5 ),
+		hue10 = red.transition( jQuery.Color({ hue: 10 }), 0.5),
+		hue350 = red.transition( jQuery.Color({ hue: 350 }), 0.5),
+		hueWrapPos = jQuery.Color({ hue: 350 }).transition( jQuery.Color({ hue: 10 }));
+
+	testParts( desaturate, {
+		prefix: "red -> desaturatue 0.5",
+		hue: 0,
+		saturation: 0.5,
+		lightness: 0.5,
+		alpha: 1
+	});
+	testParts( hue10, {
+		prefix: "red -> hue 10 0.5",
+		hue: 5,
+		saturation: 1,
+		lightness: 0.5,
+		alpha: 1
+	});
+	testParts( hue350, {
+		prefix: "red -> hue 350 0.5",
+		hue: 355,
+		saturation: 1,
+		lightness: 0.5,
+		alpha: 1
+	});
+	testParts( hueWrapPos, {
+		prefix: " hue 350 -> hue 10 0.5",
+		hue: 0,
+		saturation: null,
+		lightness: null,
+		alpha: 1
+	});
+
+});
