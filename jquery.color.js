@@ -104,6 +104,8 @@
 		spaces = {
 			rgba:
 			{
+				sortorder: 0,
+
 				props:
 				{
 					red:
@@ -126,6 +128,8 @@
 
 			hsla:
 			{
+				sortorder: 1,
+
 				props:
 				{
 					hue:
@@ -154,6 +158,8 @@
 			*/
 			hsva:
 			{
+				sortorder: 2,
+
 				props:
 				{
 					hue:
@@ -213,6 +219,7 @@
 	// for rgba and hsla spaces
 	each(spaces, function(spaceName, space)
 	{
+		space.name = spaceName;
 		space.cache = "_" + spaceName;
 		space.props.alpha = {
 			idx: 3,
@@ -298,6 +305,9 @@
 
 	color.fn = $.extend(color.prototype,
 	{
+
+		_cache_: {},
+
 		parse: function(red, green, blue, alpha)
 		{
 			if (red === undefined)
@@ -341,7 +351,7 @@
 			{
 				if (red instanceof color)
 				{
-					each(spaces, function(spaceName, space)
+					spaces_order._each(function(spaceName, space)
 					{
 						if (red[space.cache])
 						{
@@ -351,16 +361,40 @@
 				}
 				else
 				{
-					each(spaces, function(spaceName, space)
+					var _temp = {};
+
+					spaces_order._each(function(spaceName, space)
 					{
 						var cache = space.cache;
+
+						_temp[cache] = 0;
+
 						each(space.props, function(key, prop)
 						{
+							(red[key] !== null && red[key] !== undefined) && _temp[cache]++;
+						});
 
+						_temp['_'] = Math.max(_temp['_'] || 0, _temp[cache]);
+					});
+
+					spaces_order._each(function(spaceName, space)
+					{
+						var cache = space.cache;
+
+						if (spaceName != 'rgba' && (_temp['_'] > _temp[cache] || !_temp[cache]))
+						{
+							return;
+						}
+						else if (spaceName != 'rgba')
+						{
+							_temp['_']++;
+						}
+
+						each(space.props, function(key, prop)
+						{
 							// if the cache doesn't exist, and we know how to convert
 							if (!inst[cache] && space.to)
 							{
-
 								// if the value was null, we don't need to copy it
 								// if the key was alpha, we don't need to copy it either
 								if (key === "alpha" || red[key] == null)
@@ -396,7 +430,7 @@
 				same = true,
 				inst = this;
 
-			each(spaces, function(_, space)
+			spaces_order._each(function(_, space)
 			{
 				var localCache,
 					isCache = is[space.cache];
@@ -420,7 +454,7 @@
 		{
 			var used = [],
 				inst = this;
-			each(spaces, function(spaceName, space)
+			spaces_order._each(function(spaceName, space)
 			{
 				if (inst[space.cache])
 				{
@@ -634,8 +668,6 @@
 				a = rgb.pop()
 				;
 
-			console.log([rgb, a]);
-
 			if (skipAlpha)
 			{
 				var _copy = this.clone().blend();
@@ -798,6 +830,13 @@
 	*/
 
 	$.extend(color, {
+
+		_: {
+			props: {},
+
+			spaces: spaces,
+		},
+
 		rand: function(options)
 		{
 			return color(options || [255, 255, 255, 1]).rand();
@@ -855,42 +894,74 @@
 		},
 
 		// https://gist.github.com/xpansive/1241234
-		hsv2rgb: function (
-			//parameters range from 0 - 1
-			a, // hue 0.0 - 1.0
-			b, // saturation 0.0 - 1.0
-			c, // value 0.0 - 1.0
-
-			d, // hue divider
-			e, // value splitter
-			f // array placeholder
-		)
+		hsv2rgb: function(h, s, v)
 		{
-			d = a * 6 % 1; // deviation of the current hue (red<->yellow<->green<->cyan<->blue<->violet),
-			// the higher the value, the more the color deviates to the next hue
+			h = h / 360;
+			/*
+			s = s;
+			v = v;
+			*/
 
-			// create an array of the color strength regardless of hue
-			f = [
-				c, // full value on this color
-				-c * d * b + c, // deviation part 1
-				e = -c * b + c, // deviation part 2
-				e, // median deviation
-				c * d * b + e, // deviation part 3
-				c // full value
-			];
+			var red, green, blue;
 
-			// select the colors out of the array in regard of hue
-			var ret = [
-				// [r,g,b] - ranges from 0 to 1
-				f[d = a * 6 | 0], //red
-				f[(4 + d) % 6], //green
-				f[(2 + d) % 6] //blue
-			];
+			if (s == 0)
+			{
+				var val = Math.round(v * 255);
+				return [
+					val,
+					val,
+					val
+				];
+			}
+			var hPos = h * 6;
+			var hPosBase = Math.floor(hPos);
+			var base1 = v * (1 - s);
+			var base2 = v * (1 - s * (hPos - hPosBase));
+			var base3 = v * (1 - s * (1 - (hPos - hPosBase)));
+			if (hPosBase == 0)
+			{
+				red = v;
+				green = base3;
+				blue = base1
+			}
+			else if (hPosBase == 1)
+			{
+				red = base2;
+				green = v;
+				blue = base1
+			}
+			else if (hPosBase == 2)
+			{
+				red = base1;
+				green = v;
+				blue = base3
+			}
+			else if (hPosBase == 3)
+			{
+				red = base1;
+				green = base2;
+				blue = v
+			}
+			else if (hPosBase == 4)
+			{
+				red = base3;
+				green = base1;
+				blue = v
+			}
+			else
+			{
+				red = v;
+				green = base1;
+				blue = base2
+			};
 
+			red = Math.round(red * 255);
+			green = Math.round(green * 255);
+			blue = Math.round(blue * 255);
 			return [
-				Math.round(ret[0] * 255),
-				Math.round(ret[1] * 255),
-				Math.round(ret[2] * 255),
+				red,
+				green,
+				blue
 			];
 		},
 
@@ -1021,7 +1092,7 @@
 			return arr;
 		}
 
-		var h = hsva[0] / 360,
+		var h = hsva[0]/* / 360*/,
 			s = hsva[1],
 			v = hsva[2],
 			a = hsva[3]
@@ -1041,16 +1112,62 @@
 		}
 	}
 
+	var spaces_order = [];
+
+	spaces_order.__proto__._each = function (callback)
+	{
+		return this.forEach(function (space, sortorder, array)
+		{
+			return callback(space.name, space);
+		});
+	};
+
 	each(spaces, function(spaceName, space)
+	{
+		space.name = spaceName;
+
+		spaces_order.push(spaces[spaceName]);
+	});
+
+	spaces_order.sort(function (a, b) {
+
+		a.sortorder = (a.sortorder === null || a.sortorder === undefined) ? 99 : a.sortorder;
+		b.sortorder = (b.sortorder === null || b.sortorder === undefined) ? 99 : b.sortorder;
+
+		if (a.sortorder == b.sortorder)
+		{
+			return a.name > b.name;
+		}
+
+		return a.sortorder > b.sortorder;
+	});
+
+	spaces_order._each(function(spaceName, space)
+	{
+		var props = space.props;
+
+		each(props, function(key, prop)
+		{
+			color._.props[key] = color._.props[key] || {};
+
+			color._.props[key][spaceName] = prop.idx;
+		});
+	});
+
+//	each(spaces, function(spaceName, space)
+	spaces_order._each(function(spaceName, space)
 	{
 		var props = space.props,
 			cache = space.cache,
 			to = space.to,
 			from = space.from;
 
+//		console.log(spaceName);
+
 		// makes rgba() and hsla()
 		color.fn[spaceName] = function(value)
 		{
+//			this._cache_['spaceName'] = spaceName;
 
 			// generate a cache for this space if it doesn't exist
 			if (to && !this[cache])
@@ -1099,11 +1216,33 @@
 			}
 			color.fn[key] = function(value)
 			{
+				var inst = this,
+					fn,
+					_prop;
+
+				each(color._.props[key], function (spaceName)
+				{
+					var _fn = spaces[spaceName].cache;
+
+					if (inst[_fn])
+					{
+						fn = spaceName;
+						_prop = spaces[spaceName].props[key];
+
+						return false;
+					}
+				});
+
+				_prop = _prop || prop;
+				fn = fn || spaceName;
+
 				var vtype = $.type(value),
-					fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
+					//fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
 					local = this[fn](),
-					cur = local[prop.idx],
+					cur = local[_prop.idx],
 					match;
+
+				//console.log(this, this._cache_, fn, local);
 
 				if (vtype === "undefined")
 				{
@@ -1115,7 +1254,7 @@
 					value = value.call(this, cur);
 					vtype = $.type(value);
 				}
-				if (value == null && prop.empty)
+				if (value == null && _prop.empty)
 				{
 					return this;
 				}
@@ -1127,7 +1266,8 @@
 						value = cur + parseFloat(match[2]) * (match[1] === "+" ? 1 : -1);
 					}
 				}
-				local[prop.idx] = value;
+
+				local[_prop.idx] = value;
 				return this[fn](local);
 			};
 		});
@@ -1173,7 +1313,7 @@
 
 						value = value.toRgbaString();
 					}
-					/*
+
 					try
 					{
 						elem.style[hook] = value;
@@ -1182,7 +1322,6 @@
 					{
 						// wrapped to prevent IE from throwing errors on "invalid" values like 'auto' or 'inherit'
 					}
-					*/
 
 					// let jquery handle hook value
 					return value;
