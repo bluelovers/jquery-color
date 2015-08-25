@@ -1400,4 +1400,13 @@
 
 	//console.log([_global_]);
 
-}(jQuery));
+}((function()
+{
+
+	if (typeof require === 'function')
+	{
+		return require('jquery');
+	}
+	return window.jQuery;
+
+})()));
