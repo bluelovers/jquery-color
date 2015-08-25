@@ -209,8 +209,6 @@
 	supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
 	support.rgba = supportElem.style.backgroundColor.indexOf("rgba") > -1;
 
-	color.spaces = spaces;
-
 	// define cache name and alpha properties
 	// for rgba and hsla spaces
 	each(spaces, function(spaceName, space)
@@ -300,6 +298,9 @@
 
 	color.fn = $.extend(color.prototype,
 	{
+
+		_cache_: {},
+
 		parse: function(red, green, blue, alpha)
 		{
 			if (red === undefined)
@@ -656,8 +657,6 @@
 				a = rgb.pop()
 				;
 
-			console.log([rgb, a]);
-
 			if (skipAlpha)
 			{
 				var _copy = this.clone().blend();
@@ -820,6 +819,13 @@
 	*/
 
 	$.extend(color, {
+
+		_: {
+			props: {},
+
+			spaces: spaces,
+		},
+
 		rand: function(options)
 		{
 			return color(options || [255, 255, 255, 1]).rand();
@@ -1097,6 +1103,18 @@
 
 	each(spaces, function(spaceName, space)
 	{
+		var props = space.props;
+
+		each(props, function(key, prop)
+		{
+			color._.props[key] = color._.props[key] || {};
+
+			color._.props[key][spaceName] = prop.idx;
+		});
+	});
+
+	each(spaces, function(spaceName, space)
+	{
 		var props = space.props,
 			cache = space.cache,
 			to = space.to,
@@ -1105,6 +1123,7 @@
 		// makes rgba() and hsla()
 		color.fn[spaceName] = function(value)
 		{
+			this._cache_['spaceName'] = spaceName;
 
 			// generate a cache for this space if it doesn't exist
 			if (to && !this[cache])
@@ -1153,11 +1172,33 @@
 			}
 			color.fn[key] = function(value)
 			{
+				var inst = this,
+					fn,
+					_prop;
+
+				each(color._.props[key], function (spaceName)
+				{
+					var _fn = spaces[spaceName].cache;
+
+					if (inst[_fn])
+					{
+						fn = spaceName;
+						_prop = spaces[spaceName].props[key];
+
+						return false;
+					}
+				});
+
+				_prop = _prop || prop;
+				fn = fn || spaceName;
+
 				var vtype = $.type(value),
-					fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
+					//fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
 					local = this[fn](),
-					cur = local[prop.idx],
+					cur = local[_prop.idx],
 					match;
+
+				//console.log(this, this._cache_, fn, local);
 
 				if (vtype === "undefined")
 				{
@@ -1169,7 +1210,7 @@
 					value = value.call(this, cur);
 					vtype = $.type(value);
 				}
-				if (value == null && prop.empty)
+				if (value == null && _prop.empty)
 				{
 					return this;
 				}
@@ -1181,7 +1222,8 @@
 						value = cur + parseFloat(match[2]) * (match[1] === "+" ? 1 : -1);
 					}
 				}
-				local[prop.idx] = value;
+
+				local[_prop.idx] = value;
 				return this[fn](local);
 			};
 		});
