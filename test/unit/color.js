@@ -172,6 +172,15 @@ parseTest( "rgba(127,127,127,0.5)", fiftypercentalpha );
 parseTest( "rgba(50%,50%,50%,0.5)", fiftypercentalpha );
 parseTest( "rgba(127, 127, 127, .5)", fiftypercentalpha );
 parseTest( "rgba(50%, 50%, 50%, .5)", fiftypercentalpha );
+
+parseTest( "rgb(0.9%, .9%, 9%)", {
+	expect: 4,
+	red: 2,
+	green: 2,
+	blue: 22,
+	alpha: 1
+});
+
 parseTest( "rgba(0, 0, 0, 0)", {
 	expect: 4,
 	red: null,
