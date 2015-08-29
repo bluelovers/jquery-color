@@ -105,7 +105,7 @@
 		spaces = {
 			rgba:
 			{
-				sortorder: 0,
+				sortorder: 0-3,
 
 				props:
 				{
@@ -129,7 +129,7 @@
 
 			hsla:
 			{
-				sortorder: 1,
+				sortorder: 1-3,
 
 				props:
 				{
@@ -159,7 +159,7 @@
 			*/
 			hsva:
 			{
-				sortorder: 2,
+				sortorder: 2-3,
 
 				props:
 				{
@@ -1192,6 +1192,23 @@
 		];
 	};
 
+	spaces.hsla.fromto = $.extend(spaces.hsla.fromto, {}, {
+		hsva: function(v)
+		{
+			if (_valid_rgba(v))
+			{
+				return [
+					v[0],
+					v[1],
+					null,
+					v[3],
+				];
+			}
+
+			return color.hsv2hsl.apply(color, v);
+		},
+	});
+
 	spaces.hsva.to = function(rgba)
 	{
 		var arr;
@@ -1359,10 +1376,13 @@
 			{
 				var inst = this,
 					fn,
+					fn2,
 					fn_last,
 					local,
 					cur,
 					_prop;
+
+				fn2 = inst._space();
 
 				each(color._.props[key], function (spaceName)
 				{
@@ -1386,7 +1406,7 @@
 
 				var vtype = $.type(value),
 					//fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
-					fn2 = (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")),
+					//fn2 = (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")),
 					/*
 					local = this[fn](),
 					cur = local[_prop.idx],
