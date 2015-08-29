@@ -111,6 +111,40 @@ test( "jQuery.Color.hsv2rgb(100,1,1)", function() {
 
 });
 
+test("jQuery.Color({hue: 100, saturation: 1, brightness: 1}, 'hsva')", function() {
+	testParts( jQuery.Color({
+			hue: 100,
+			saturation: 1,
+			brightness: 1,
+		}, 'hsva'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color([100, 1, 1], 'hsva')", function() {
+	testParts( jQuery.Color([
+			100,
+			1,
+			1,
+		], 'hsva'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
 test("HSLA Transitions", function() {
 	var red = jQuery.Color("red"),
 		desaturate = red.transition( jQuery.Color({ saturation: 0 }), 0.5 ),
