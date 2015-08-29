@@ -327,6 +327,47 @@
 				type = $.type(red),
 				rgba = this._rgba = [];
 
+			var _spaceName;
+
+			if (green !== undefined && (type === "array" || type === "object"))
+			{
+				if (green in spaces)
+				{
+					_spaceName = (inst._data_ = inst._data_ || {}).spaceName = green + '';
+
+					green = undefined;
+					delete green;
+
+					if (blue === true)
+					{
+						//console.log(_spaceName, type, red, blue);
+					}
+					else
+					{
+						var _array = {};
+
+						if (type === 'array')
+						{
+							each(spaces[_spaceName].props, function(key, prop)
+							{
+								_array[key] = clamp(red[prop.idx], prop);
+							});
+						}
+						else if (type === 'object')
+						{
+							each(spaces[_spaceName].props, function(key, prop)
+							{
+								_array[key] = clamp(red[key], prop);
+							});
+						}
+
+						//console.log(_spaceName, type, _array);
+
+						return this.parse(_array, _spaceName, true);
+					}
+				}
+			}
+
 			// more than 1 argument specified - assume ( red, green, blue, alpha )
 			if (green !== undefined)
 			{
@@ -372,7 +413,7 @@
 
 						each(space.props, function(key, prop)
 						{
-							(red[key] !== null && red[key] !== undefined) && _temp[cache]++;
+							(red[key] !== undefined) && _temp[cache]++;
 						});
 
 						_temp['_'] = Math.max(_temp['_'] || 0, _temp[cache]);
