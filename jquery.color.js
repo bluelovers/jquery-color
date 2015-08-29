@@ -311,6 +311,8 @@
 
 		parse: function(red, green, blue, alpha)
 		{
+			this._data_ = this._data_ || {};
+
 			if (red === undefined)
 			{
 				this._rgba = [null, null, null, null];
@@ -328,6 +330,8 @@
 				rgba = this._rgba = [];
 
 			var _spaceName;
+
+			_spaceName = inst._data_.spaceName = 'rgba';
 
 			if (green !== undefined && (type === "array" || type === "object"))
 			{
@@ -363,7 +367,7 @@
 
 						//console.log(_spaceName, type, _array);
 
-						return this.parse(_array, _spaceName, true);
+						return inst.parse(_array, _spaceName, true);
 					}
 				}
 			}
@@ -432,7 +436,7 @@
 							_temp['_']++;
 						}
 
-						_spaceName = (inst._data_ = inst._data_ || {}).spaceName = spaceName + '';
+						_spaceName = inst._data_.spaceName = spaceName + '';
 
 						each(space.props, function(key, prop)
 						{
@@ -507,6 +511,12 @@
 			});
 			return used.pop();
 		},
+
+		spaceName: function()
+		{
+			return this._data_.spaceName;
+		},
+
 		transition: function(other, distance)
 		{
 			var end = color(other),
@@ -631,9 +641,26 @@
 				})
 				.join("");
 		},
-		toString: function()
+
+		toString: function(flag)
 		{
-			return this._rgba[3] === 0 ? "transparent" : this.toRgbaString();
+			//return this._rgba[3] === 0 ? "transparent" : this.toRgbaString();
+
+			if (this._rgba[3] === 0)
+			{
+				return 'transparent';
+			}
+			else if (flag || this._data_.format)
+			{
+				var spaceName = this.format() || this._space();
+
+				if (spaceName && spaceName != 'rgba')
+				{
+					return this['to' + ucfirst(spaceName) + 'String']();
+				}
+			}
+
+			return this.toRgbaString();
 		},
 
 		clone: function()
@@ -835,6 +862,58 @@
 
 			return _cache_['colors.names'][this.toHexString()];
 		},
+
+		isVaild: function()
+		{
+			var i;
+
+			for (i =0; i<3; i++)
+			{
+				if (this._rgba[0] === null || this._rgba[0] === undefined)
+				{
+					return false;
+				}
+			}
+
+			return !!(i === 2);
+		},
+
+		vaildSpaceName: function()
+		{
+			return !!(this._space() === this.spaceName());
+		},
+
+		format: function(format)
+		{
+			if (format === undefined)
+			{
+				return this._data_.format || color.options.format;
+			}
+
+			var inst = this,
+				type = $.type(format)
+				;
+
+			if (type === 'function')
+			{
+				var _val = format.call(this._data_.format);
+
+				if (_val !== undefined)
+				{
+					format = _val;
+				}
+			}
+
+			if (!format || !(format in spaces))
+			{
+				format = null;
+			}
+
+			this._data_.format = format;
+
+			return this;
+		},
+
 	});
 	color.fn.parse.prototype = color.fn;
 
@@ -861,17 +940,18 @@
 		console.log([e]);
 	}
 
-	/*
-	$.extend(color, {
-		_defaults: {
-			format: 'rgba',
+	$.extend(color,
+	{
+		_defaults:
+		{
+			//format: 'rgba',
 		},
 
-		options: {
-			format: 'Rgba',
+		options:
+		{
+			//format: 'Rgba',
 		},
 	});
-	*/
 
 	$.extend(color, {
 
@@ -1148,6 +1228,23 @@
 		return rgba;
 	};
 
+	spaces.hsva.fromto = $.extend(spaces.hsva.fromto, {}, {
+		hsla: function(v)
+		{
+			if (_valid_rgba(v))
+			{
+				return [
+					v[0],
+					v[1],
+					null,
+					v[3],
+				];
+			}
+
+			return color.hsl2hsv.apply(color, v);
+		},
+	});
+
 	function _valid_rgba(arr)
 	{
 		if (arr[0] == null || arr[1] == null || arr[2] == null)
@@ -1262,18 +1359,25 @@
 			{
 				var inst = this,
 					fn,
+					fn_last,
+					local,
+					cur,
 					_prop;
 
 				each(color._.props[key], function (spaceName)
 				{
 					var _fn = spaces[spaceName].cache;
 
+//					console.log(inst, fn, key, spaceName, _fn, inst[_fn]);
+
 					if (inst[_fn])
 					{
+						fn_last = fn;
+
 						fn = spaceName;
 						_prop = spaces[spaceName].props[key];
 
-						return false;
+						//return false;
 					}
 				});
 
@@ -1282,11 +1386,26 @@
 
 				var vtype = $.type(value),
 					//fn = (key === "alpha" ? (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")) : spaceName),
+					fn2 = (this._hsva ? 'hsva' : (this._hsla ? "hsla" : "rgba")),
+					/*
 					local = this[fn](),
 					cur = local[_prop.idx],
+					*/
 					match;
 
-				//console.log(this, this._cache_, fn, local);
+				if ((fn != fn2) && spaces[fn].fromto && spaces[fn].fromto[fn2])
+				{
+					local = spaces[fn].fromto[fn2](this[fn2]());
+					cur = local[_prop.idx];
+				}
+				else
+				{
+					local = this[fn]();
+					cur = local[_prop.idx];
+				}
+
+				//console.log(this, key, fn, spaceName, fn_last, fn2, local, cur, !!((fn != fn2) && spaces[fn].fromto && spaces[fn].fromto[fn2]));
+				//console.log(this, this._cache_, fn, local, fn_last);
 
 				if (vtype === "undefined")
 				{
@@ -1411,6 +1530,20 @@
 			}
 		}
 		return size;
+	}
+
+	function ucfirst(str) {
+		//  discuss at: http://phpjs.org/functions/ucfirst/
+		// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Onno Marsman
+		// improved by: Brett Zamir (http://brett-zamir.me)
+		//   example 1: ucfirst('kevin van zonneveld');
+		//   returns 1: 'Kevin van zonneveld'
+
+		str += '';
+		var f = str.charAt(0)
+			.toUpperCase();
+		return f + str.substr(1);
 	}
 
 	// Basic color names only.
