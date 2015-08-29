@@ -432,6 +432,8 @@
 							_temp['_']++;
 						}
 
+						_spaceName = (inst._data_ = inst._data_ || {}).spaceName = spaceName + '';
+
 						each(space.props, function(key, prop)
 						{
 							// if the cache doesn't exist, and we know how to convert
