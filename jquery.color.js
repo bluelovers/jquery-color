@@ -105,7 +105,7 @@
 		spaces = {
 			rgba:
 			{
-				sortorder: 0-3,
+				sortorder: 0,
 
 				props:
 				{
@@ -129,7 +129,7 @@
 
 			hsla:
 			{
-				sortorder: 1-3,
+				sortorder: 1,
 
 				props:
 				{
@@ -159,7 +159,7 @@
 			*/
 			hsva:
 			{
-				sortorder: 2-3,
+				sortorder: 2,
 
 				props:
 				{
@@ -1299,6 +1299,8 @@
 
 		return a.sortorder > b.sortorder;
 	});
+
+	_cache_['spaces.order'] = spaces_order;
 
 	spaces_order._each(function(spaceName, space)
 	{
