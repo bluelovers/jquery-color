@@ -224,3 +224,8 @@ test("HSLA Transitions", function() {
 	});
 
 });
+
+test( "alpha setter leaves space as hsva", function() {
+	var test = jQuery.Color({hue: 0, saturation: 0, brightness: 0, alpha: 0}).alpha( 1 );
+	ok( test._hsva, "HSVA cache still exists after calling alpha setter" );
+});
