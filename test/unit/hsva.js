@@ -145,6 +145,48 @@ test("jQuery.Color([100, 1, 1], 'hsva')", function() {
 	});
 });
 
+test("jQuery.Color({hue: 100, saturation: 1, lightness: 0.5}, 'hsla')", function() {
+	testParts( jQuery.Color({
+			hue: 100,
+			saturation: 1,
+			lightness: 0.5,
+		}, 'hsla'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color([100, 1, 0.5], 'hsla')", function() {
+	testParts( jQuery.Color([
+			100,
+			1,
+			0.5,
+		], 'hsla'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color.hsv2hsl(100, 1, 1)", function() {
+	deepEqual( jQuery.Color.hsv2hsl(100, 1, 1), [100, 1, 0.5]);
+});
+
+test("jQuery.Color.hsl2hsv(100, 1, 0.5)", function() {
+	deepEqual( jQuery.Color.hsl2hsv(100, 1, 0.5), [100, 1, 1]);
+});
+
 test("HSLA Transitions", function() {
 	var red = jQuery.Color("red"),
 		desaturate = red.transition( jQuery.Color({ saturation: 0 }), 0.5 ),
