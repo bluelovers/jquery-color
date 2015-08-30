@@ -148,7 +148,15 @@
 						idx: 2,
 						type: "percent"
 					}
-				}
+				},
+
+				/*
+				supportTest: function (supportElem)
+				{
+					supportElem.style.cssText = "background-color:hsla(0, 100%, 50%, 0.3)";
+					return supportElem.style.backgroundColor.indexOf("hsla") > -1;
+				},
+				*/
 			},
 
 			// not work on css
@@ -179,7 +187,15 @@
 						idx: 2,
 						type: "percent"
 					}
-				}
+				},
+
+				/*
+				supportTest: function (supportElem)
+				{
+					supportElem.style.cssText = "background-color:hsva( 180, 50%, 50%, 0.5 )";
+					return supportElem.style.backgroundColor.indexOf("hsva") > -1;
+				},
+				*/
 			},
 		},
 		propTypes = {
@@ -227,6 +243,13 @@
 			type: "percent",
 			def: 1
 		};
+
+		/*
+		if ($.type(space.supportTest) === 'function')
+		{
+			support[spaceName] = !!space.supportTest(supportElem);
+		}
+		*/
 	});
 
 	function clamp(value, prop, allowEmpty)
@@ -337,7 +360,7 @@
 			{
 				if (green in spaces)
 				{
-					_spaceName = (inst._data_ = inst._data_ || {}).spaceName = green + '';
+					_spaceName = inst._data_.spaceName = green + '';
 
 					green = undefined;
 					delete green;
@@ -397,6 +420,7 @@
 			{
 				if (red instanceof color)
 				{
+					/*
 					spaces_order._each(function(spaceName, space)
 					{
 						if (red[space.cache])
@@ -404,6 +428,9 @@
 							inst[space.cache] = red[space.cache].slice();
 						}
 					});
+					*/
+
+					inst.copy(red);
 				}
 				else
 				{
@@ -469,14 +496,25 @@
 						}
 					});
 				}
-				return this;
+
+				return this._update();
 			}
 		},
-		is: function(compare)
+		is: function(compare, flag)
 		{
 			var is = color(compare),
 				same = true,
 				inst = this;
+
+			if (flag)
+			{
+				is = is.toVaild();
+
+				if (flag > 1)
+				{
+					inst = inst.toVaild();
+				}
+			}
 
 			spaces_order._each(function(_, space)
 			{
@@ -652,7 +690,7 @@
 			}
 			else if (flag || this._data_.format)
 			{
-				var spaceName = this.format() || this._space();
+				var spaceName = (flag == 2 ? this._space() : this.format()) || this._space();
 
 				if (spaceName && spaceName != 'rgba')
 				{
@@ -865,11 +903,16 @@
 
 		isVaild: function()
 		{
+			if (this._rgba[3] === 0)
+			{
+				return true;
+			}
+
 			var i;
 
 			for (i =0; i<3; i++)
 			{
-				if (this._rgba[0] === null || this._rgba[0] === undefined)
+				if (this._rgba[i] === null || this._rgba[i] === undefined)
 				{
 					return false;
 				}
@@ -912,6 +955,56 @@
 			this._data_.format = format;
 
 			return this;
+		},
+
+		_update: function ()
+		{
+			this._data_ = this._data_ || {};
+			this._data_.spaceName = this._space();
+
+			return this;
+		},
+
+		copy: function (source)
+		{
+			var inst = this;
+
+			inst._data_ = $.extend({}, source._data_, {});
+
+			each(spaces, function(spaceName, space)
+			{
+				delete inst[space.cache];
+
+				if (source[space.cache])
+				{
+					inst[space.cache] = source[space.cache].slice();
+				}
+			});
+
+			inst._update();
+
+			return inst;
+		},
+
+		toVaild: function(overwrite)
+		{
+			var inst = this,
+				o;
+
+			if (!inst.isVaild())
+			{
+				o = color(inst.toString(2));
+
+				if (overwrite)
+				{
+					o = inst.copy(o);
+				}
+			}
+			else
+			{
+				o = overwrite ? inst : color(inst);
+			}
+			return o;
 		},
 
 	});
