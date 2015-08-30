@@ -111,6 +111,82 @@ test( "jQuery.Color.hsv2rgb(100,1,1)", function() {
 
 });
 
+test("jQuery.Color({hue: 100, saturation: 1, brightness: 1}, 'hsva')", function() {
+	testParts( jQuery.Color({
+			hue: 100,
+			saturation: 1,
+			brightness: 1,
+		}, 'hsva'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color([100, 1, 1], 'hsva')", function() {
+	testParts( jQuery.Color([
+			100,
+			1,
+			1,
+		], 'hsva'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color({hue: 100, saturation: 1, lightness: 0.5}, 'hsla')", function() {
+	testParts( jQuery.Color({
+			hue: 100,
+			saturation: 1,
+			lightness: 0.5,
+		}, 'hsla'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color([100, 1, 0.5], 'hsla')", function() {
+	testParts( jQuery.Color([
+			100,
+			1,
+			0.5,
+		], 'hsla'), {
+		red: 85,
+		green: 255,
+		blue: 0,
+		alpha: 1,
+		hue: 100,
+		saturation: 1,
+		brightness: 1,
+		lightness: 0.5,
+	});
+});
+
+test("jQuery.Color.hsv2hsl(100, 1, 1)", function() {
+	deepEqual( jQuery.Color.hsv2hsl(100, 1, 1), [100, 1, 0.5]);
+});
+
+test("jQuery.Color.hsl2hsv(100, 1, 0.5)", function() {
+	deepEqual( jQuery.Color.hsl2hsv(100, 1, 0.5), [100, 1, 1]);
+});
+
 test("HSLA Transitions", function() {
 	var red = jQuery.Color("red"),
 		desaturate = red.transition( jQuery.Color({ saturation: 0 }), 0.5 ),
@@ -147,4 +223,9 @@ test("HSLA Transitions", function() {
 		alpha: 1
 	});
 
+});
+
+test( "alpha setter leaves space as hsva", function() {
+	var test = jQuery.Color({hue: 0, saturation: 0, brightness: 0, alpha: 0}).alpha( 1 );
+	ok( test._hsva, "HSVA cache still exists after calling alpha setter" );
 });
